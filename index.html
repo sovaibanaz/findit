@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FindIt — School Lost &amp; Found</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--navy:#0b1f4b;--royal:#2457d6;--mint:#c9f2e3;--bg:#f4f7fc;--card:#fff;--text:#14213d;--muted:#5b6784;--line:#dde4f2;--okbg:#d9f7ea;--ok:#0d6b45;--warn:#b45309;--warnbg:#fff1d6;--bad:#b3261e;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1330;--card:#122049;--text:#eaf0ff;--muted:#a3b1d6;--line:#26376b;--mint:#1c4a47;--okbg:#12453a;--ok:#8ff0c6;--warn:#ffd28a;--warnbg:#4a3511;--bad:#ff9d96;color-scheme:dark}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--navy);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--navy);color:#fff}
+.bar{max-width:1100px;margin:auto;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:1.3rem;display:flex;gap:8px;align-items:center;cursor:pointer;background:none;border:0;color:#fff}
+.logo span{background:var(--mint);color:var(--navy);border-radius:10px;padding:2px 8px}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav button{background:none;border:0;color:#cfdaff;padding:8px 12px;border-radius:999px;cursor:pointer;font:inherit}
+nav button.on,nav button:hover{background:rgba(255,255,255,.14);color:#fff}
+main{max-width:1100px;margin:auto;padding:20px 16px 40px}
+:focus-visible{outline:3px solid #7aa2ff;outline-offset:2px}
+.hero{background:linear-gradient(135deg,var(--navy),var(--royal));color:#fff;border-radius:24px;padding:36px 24px;text-align:center;box-shadow:0 10px 30px rgba(11,31,75,.25);animation:rise .5s ease}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.hero h1{margin:6px 0;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.15}
+.hero p{max-width:560px;margin:8px auto;color:#dbe6ff}
+.tag{display:inline-block;background:var(--mint);color:var(--navy);padding:3px 12px;border-radius:999px;font-weight:600;font-size:.85rem}
+.search{display:flex;gap:8px;max-width:560px;margin:18px auto 0}
+input,select,textarea{width:100%;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--text);font:inherit}
+.btn{background:var(--royal);color:#fff;border:0;border-radius:12px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.alt{background:var(--mint);color:var(--navy)}.btn.ghost{background:transparent;color:var(--royal);border:1.5px solid var(--royal)}.btn.bad{background:var(--bad);color:#fff}
+.btn:hover{filter:brightness(1.08)}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 2px 10px rgba(11,31,75,.07)}
+.big{cursor:pointer;text-align:center;padding:28px 18px;transition:transform .2s;border:0;font:inherit;color:inherit;width:100%}
+.big:hover{transform:translateY(-3px)}.big .ic{font-size:2.6rem}.big h2{margin:6px 0}
+.lostc{background:linear-gradient(160deg,#e4ecff,#cfdcff);color:var(--navy)}.foundc{background:linear-gradient(160deg,#d9f7ea,#b9ecd6);color:#073b2a}
+.stat{text-align:center}.stat b{font-size:2rem;color:var(--royal);display:block}
+h2.sec{margin:32px 0 12px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.78rem;font-weight:700}
+.b-Open{background:#dbe6ff;color:#1b3a8a}.b-PM{background:var(--warnbg);color:var(--warn)}.b-Returned{background:var(--okbg);color:var(--ok)}.b-Closed{background:var(--line);color:var(--muted)}
+.t-lost{background:#dbe6ff;color:#1b3a8a}.t-found{background:var(--okbg);color:var(--ok)}
+.muted{color:var(--muted);font-size:.9rem}
+label{display:block;font-weight:600;margin:12px 0 4px}.req::after{content:" *";color:var(--bad)}
+.err{background:var(--warnbg);color:var(--bad);border-radius:12px;padding:10px 14px;margin:12px 0;font-weight:600}
+.ok{background:var(--okbg);color:var(--ok);border-radius:12px;padding:12px 14px;font-weight:600}
+.match{border-left:5px solid var(--royal);background:var(--bg);border-radius:12px;padding:10px 12px;margin-top:10px}
+.bar2{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:4px 0}.bar2 i{display:block;height:100%;background:linear-gradient(90deg,var(--royal),#2fc59a)}
+.chip{display:inline-block;background:var(--mint);color:var(--navy);border-radius:999px;padding:1px 9px;font-size:.78rem;margin:2px 3px 0 0}
+.filters{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin:12px 0}
+.steps .n{width:38px;height:38px;border-radius:50%;background:var(--royal);color:#fff;display:grid;place-items:center;font-weight:800;margin-bottom:8px}
+.photo{width:100%;max-height:150px;object-fit:cover;border-radius:12px;margin-bottom:8px}
+.empty{text-align:center;padding:40px 10px;color:var(--muted)}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:560px}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.9rem}
+dialog{border:0;border-radius:20px;padding:22px;max-width:440px;width:92%;background:var(--card);color:var(--text);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+dialog::backdrop{background:rgba(5,10,30,.6)}
+footer{background:var(--navy);color:#cfdaff;text-align:center;padding:24px 16px;font-size:.9rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid #fff5;border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px}@keyframes sp{to{transform:rotate(360deg)}}
+.sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<a class="sr" href="#main">Skip to content</a>
+<header><div class="bar">
+<button class="logo" data-go="home" aria-label="FindIt home"><span>🔎</span>FindIt</button>
+<nav id="nav" aria-label="Main"></nav></div></header>
+<main id="main" tabindex="-1"></main>
+<footer>FindIt — a school Computer Science project. <b>Privacy:</b> never share phone numbers or roll numbers in public. Use “Request contact” and the school office will verify before any handover.<br><span class="muted" style="color:#9fb2ea">Demo mode: reports are stored only in this browser.</span></footer>
+<dialog id="dlg"></dialog>
+
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CATS={books:"📚",stationery:"✏️",bags:"🎒","water bottles":"🧴",clothing:"🧥","ID cards":"🪪",electronics:"🎧",other:"📦"};
+const day=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)};
+/* ---------- storage (demo mode: localStorage, falls back to memory) ---------- */
+let mem={};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return k in mem?mem[k]:d}},
+set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};
+function seed(){return[
+{id:"FI-1001",type:"lost",name:"Blue water bottle",student:"Demo Student A",cls:"8-B",roll:"14",phone:"",cat:"water bottles",colour:"blue",desc:"Blue steel bottle with a dent near the cap",loc:"Playground",date:day(2),status:"Open",created:Date.now()-2e8,requests:[],demo:1},
+{id:"FI-1002",type:"found",name:"Blue Milton bottle",student:"Demo Student B",cls:"9-A",roll:"7",phone:"",cat:"water bottles",colour:"blue",desc:"A blue Milton bottle found near the school library",loc:"School Library",date:day(1),status:"Open",created:Date.now()-1e8,requests:[],demo:1},
+{id:"FI-1003",type:"lost",name:"Maths notebook",student:"Demo Student C",cls:"7-C",roll:"21",phone:"",cat:"books",colour:"red",desc:"Red cover notebook with name sticker",loc:"Classroom 7C",date:day(3),status:"Open",created:Date.now()-3e8,requests:[],demo:1},
+{id:"FI-1004",type:"found",name:"Black geometry box",student:"Demo Student D",cls:"8-A",roll:"3",phone:"",cat:"stationery",colour:"black",desc:"Metal geometry box with compass inside",loc:"Canteen",date:day(0),status:"Open",created:Date.now()-5e7,requests:[],demo:1}]}
+let reports=store.get("findit_reports",null);if(!reports){reports=seed();store.set("findit_reports",reports)}
+let mine=store.get("findit_mine",[]);
+const save=()=>{store.set("findit_reports",reports);store.set("findit_mine",mine)};
+/* ---------- smart keyword matching ---------- */
+const STOP=new Set("a an the and or of in on at to for with my our is was it its near by from this that i we you lost found has have had some very one small big old new school student".split(" "));
+const toks=s=>(String(s||"").toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>1&&!STOP.has(w)).map(w=>w.length>3?w.replace(/(es|s)$/,""):w));
+const uniq=a=>[...new Set(a)];
+function score(a,b){ // a = lost, b = found (either order)
+ let s=0;const why=[];
+ if(a.cat===b.cat){s+=25;why.push("Same category")}
+ if(a.colour&&b.colour&&toks(a.colour).some(w=>toks(b.colour).includes(w))){s+=20;why.push(esc(a.colour)+" colour")}
+ const nA=uniq(toks(a.name+" "+a.cat)),nB=uniq(toks(b.name+" "+b.cat+" "+b.desc));
+ const nm=nA.filter(w=>nB.includes(w));
+ const nameHit=nm.slice(0,3);s+=nameHit.length*12;nameHit.forEach(w=>why.push(w));
+ const dA=uniq(toks(a.desc)),dB=uniq(toks(b.desc+" "+b.name));
+ const dm=dA.filter(w=>dB.includes(w)&&!nameHit.includes(w)).slice(0,5);
+ s+=dm.length*4;dm.forEach(w=>why.push(w));
+ const lA=toks(a.loc),lB=toks(b.loc);
+ if(lA.some(w=>lB.includes(w))){s+=10;why.push("Similar location")}
+ const gap=Math.abs((new Date(a.date)-new Date(b.date))/864e5);
+ if(gap<=7){s+=5;why.push("Dates close together")}
+ return{score:Math.min(100,s),why:uniq(why)};
+}
+const strength=s=>s>=70?"Strong":s>=50?"Good":"Weak";
+function matchesFor(r){
+ if(r.status==="Returned"||r.status==="Closed")return[];
+ return reports.filter(o=>o.type!==r.type&&o.status!=="Returned"&&o.status!=="Closed")
+  .map(o=>({r:o,...score(r.type==="lost"?r:o,r.type==="lost"?o:r)})).filter(m=>m.score>=35).sort((a,b)=>b.score-a.score);
+}
+const shown=r=>r.status==="Open"&&matchesFor(r).length?"Possible Match":r.status;
+const bcls=s=>"b-"+(s==="Possible Match"?"PM":s);
+/* ---------- state & routing ---------- */
+let view="home",admin=false,F={q:"",cat:"",colour:"",status:"",loc:""},done=null;
+const NAV=[["home","Home"],["lost","I Lost"],["found","I Found"],["dash","Dashboard"],["mine","My Reports"],["admin","Admin"]];
+function go(v){view=v;done=null;render();scrollTo(0,0);$("#main").focus({preventScroll:true})}
+function render(){
+ $("#nav").innerHTML=NAV.map(([k,l])=>`<button data-go="${k}" class="${view===k?"on":""}" ${view===k?'aria-current="page"':""}>${l}</button>`).join("");
+ $("#main").innerHTML=({home,lost:()=>formPage("lost"),found:()=>formPage("found"),dash,mine:myPage,admin:adminPage})[view]();
+}
+/* ---------- components ---------- */
+const stats=()=>{const l=reports.filter(r=>r.type==="lost"),f=reports.filter(r=>r.type==="found");
+ return{l:l.length,f:f.length,m:l.filter(r=>matchesFor(r).length).length}};
+function statsHTML(){const s=stats();return`<div class="grid g3">${[["Lost reports",s.l],["Found reports",s.f],["Possible matches",s.m]].map(([a,b])=>`<div class="card stat"><b>${b}</b>${a}</div>`).join("")}</div>`}
+function card(r,opts={}){
+ const ms=opts.noMatch?[]:matchesFor(r),st=shown(r);
+ return`<article class="card">${r.photo?`<img class="photo" src="${esc(r.photo)}" alt="Photo of ${esc(r.name)}">`:""}
+ <div><span class="badge t-${r.type}">${r.type==="lost"?"Lost":"Found"}</span> <span class="badge ${bcls(st)}">${esc(st)}</span></div>
+ <h3 style="margin:8px 0 2px">${CATS[r.cat]||"📦"} ${esc(r.name)}</h3>
+ <div class="muted">${esc(r.id)} · ${esc(r.date)} · 📍 ${esc(r.loc||"Not given")}</div>
+ <p style="margin:8px 0">${esc(r.desc||"No description.")}</p>
+ <span class="chip">${esc(r.cat)}</span>${r.colour?`<span class="chip">${esc(r.colour)}</span>`:""}
+ ${ms.slice(0,opts.max||2).map(m=>`<div class="match"><b>Possible Match${m.score>=70?" Found!":""}</b> — ${esc(m.r.name)} <span class="muted">(${esc(m.r.id)}, ${esc(m.r.loc||"")})</span>
+  <div class="bar2"><i style="width:${m.score}%"></i></div><b>${m.score}%</b> <span class="muted">${strength(m.score)} match · ${m.why.map(w=>esc(w)).join(", ")}</span>${opts.full?detail(m.r):""}
+  <div class="row"><button class="btn ghost" data-act="request" data-id="${esc(m.r.id)}" data-from="${esc(r.id)}">Request contact</button></div></div>`).join("")}
+ ${opts.admin?"":""}</article>`;
+}
+const detail=o=>`<div style="margin-top:8px;padding:10px;border-radius:12px;background:var(--card);border:1px solid var(--line)"><b>${o.type==="found"?"🙌 Finder’s details":"😟 Owner’s details"}</b><br>Report ID: <b>${esc(o.id)}</b><br>Name: ${esc(o.student)}<br>Class: ${esc(o.cls)} · Roll no: ${esc(o.roll)}<br>Phone: ${esc(o.phone||"not given")}<br>Item: ${esc(o.name)} (${esc(o.cat)}${o.colour?", "+esc(o.colour):""})<br>Description: ${esc(o.desc||"-")}<br>Place: ${esc(o.loc)} · Date: ${esc(o.date)}${o.photo?`<br><img class="photo" style="margin-top:6px" src="${esc(o.photo)}" alt="Photo of ${esc(o.name)}">`:""}</div>`;
+const empty=(t)=>`<div class="empty card"><div style="font-size:2.5rem">🕵️</div><p>${t}</p></div>`;
+/* ---------- pages ---------- */
+function home(){
+ const recent=[...reports].sort((a,b)=>b.created-a.created).slice(0,4);
+ return`<section class="hero"><span class="tag">FindIt — School Lost &amp; Found</span>
+ <h1>Every Lost Item Deserves a Second Chance.</h1>
+ <p>Report what you lost or found. FindIt compares reports automatically and shows possible matches, so belongings find their way home.</p>
+ <p><i>Lost it? Found it? Let’s bring it back together.</i></p>
+ <form class="search" id="hsearch" role="search"><input id="hq" placeholder="Search for your lost item..." aria-label="Search for your lost item"><button class="btn alt">Search</button></form></section>
+ <div class="grid g2" style="margin-top:20px">
+ <button class="card big lostc" data-go="lost"><div class="ic">😟</div><h2>I Lost Something</h2><div>Report it and see possible matches instantly.</div></button>
+ <button class="card big foundc" data-go="found"><div class="ic">🙌</div><h2>I Found Something</h2><div>Help the owner by reporting what you found.</div></button></div>
+ <h2 class="sec">At a glance</h2>${statsHTML()}
+ <h2 class="sec">How it works</h2><div class="grid g3 steps">
+ ${[["Report","Fill the short form for a lost or found item."],["Match","FindIt compares words, colours, categories and places."],["Verify","The school office confirms the owner before handover."]].map(([a,b],i)=>`<div class="card"><div class="n">${i+1}</div><b>${a}</b><p class="muted">${b}</p></div>`).join("")}</div>
+ <h2 class="sec">Recent reports</h2><div class="grid g2">${recent.map(r=>card(r,{max:1})).join("")}</div>`;
+}
+function field(n,l,req,inner){return`<label for="${n}" class="${req?"req":""}">${l}</label>${inner||`<input id="${n}" name="${n}" ${req?"required":""} maxlength="120" autocomplete="off">`}`}
+function formPage(t){
+ if(done&&done.type===t)return doneView();
+ const L=t==="lost";
+ return`<div class="card" style="max-width:720px;margin:auto"><h1 style="margin-top:0">${L?"😟 I Lost Something":"🙌 I Found Something"}</h1>
+ <p class="muted">Sirf * wali fields zaroori hain. Aap ki detail sirf us student ko dikhe gi jis ki report match karti hai (public dashboard par nahi).</p>
+ <form id="rf" data-type="${t}" novalidate><div id="ferr" role="alert"></div>
+ ${field("name",L?"Item name":"Item name",1)}
+ ${field("student",L?"Your name":"Finder’s name",1)}
+ <div class="grid g2"><div>${field("cls","Class and section (e.g. 8-B)",1)}</div><div>${field("roll","Roll number",1)}</div></div>
+ ${field("phone","Phone number (optional)",0,`<input id="phone" name="phone" type="tel" maxlength="15" inputmode="tel">`)}
+ <div class="grid g2"><div>${field("cat","Category",1,`<select id="cat" name="cat" required>${Object.keys(CATS).map(c=>`<option>${c}</option>`).join("")}</select>`)}</div><div>${field("colour","Colour",0)}</div></div>
+ ${field("desc","Description and identifying features",0,`<textarea id="desc" name="desc" rows="3" maxlength="400"></textarea>`)}
+ <div class="grid g2"><div>${field("loc",L?"Last known location":"Where it was found",1)}</div><div>${field("date",L?"Date lost":"Date found",1,`<input id="date" name="date" type="date" required max="${day(0)}" value="${day(0)}">`)}</div></div>
+ ${field("photo","Photo (optional, JPG/PNG/WebP, max 500 KB)",0,`<input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp">`)}
+ <div class="row"><button class="btn" id="sub">Submit report</button></div></form></div>`;
+}
+function doneView(){
+ const r=reports.find(x=>x.id===done.id),ms=matchesFor(r);
+ return`<div class="card" style="max-width:720px;margin:auto"><div class="ok">✅ Report submitted! Your reference ID is <b>${esc(r.id)}</b>. Keep it safe.</div>
+ <h2>${ms.length?"Possible Match Found!":"No possible match yet"}</h2>
+ ${ms.length?ms.slice(0,3).map(m=>`<div class="match"><b>Item:</b> ${esc(m.r.name)}<br><b>Matching details:</b> ${m.why.map(w=>esc(w)).join(", ")}${detail(m.r)}
+ <div class="bar2"><i style="width:${m.score}%"></i></div><b>${m.score}% — ${strength(m.score)} match</b> <span class="muted">(possible, not confirmed)</span>
+ <div class="row"><button class="btn ghost" data-act="request" data-id="${esc(m.r.id)}" data-from="${esc(r.id)}">Request contact</button></div></div>`).join("")
+ :`<p class="muted">Abhi koi milta-julta item report nahi hua, lekin aap ki report save ho gayi hai. Jab bhi koi matching item report karega, uski poori detail <b>My Reports</b> mein nazar aa jaye gi.</p>`}
+ <div class="row"><button class="btn" data-go="mine">My Reports</button><button class="btn alt" data-go="dash">Dashboard</button></div></div>`;
+}
+function dash(){
+ const toksQ=toks(F.q);
+ let list=reports.filter(r=>(!F.cat||r.cat===F.cat)&&(!F.colour||(r.colour||"").toLowerCase().includes(F.colour.toLowerCase()))&&(!F.status||shown(r)===F.status)&&(!F.loc||(r.loc||"").toLowerCase().includes(F.loc.toLowerCase())));
+ if(toksQ.length){list=list.map(r=>({r,s:toksQ.filter(w=>toks(r.name+" "+r.desc+" "+r.colour+" "+r.cat).includes(w)).length})).filter(x=>x.s).sort((a,b)=>b.s-a.s||b.r.created-a.r.created).map(x=>x.r)}
+ else list.sort((a,b)=>b.created-a.created);
+ return`<h1>Dashboard</h1>${statsHTML()}
+ <form class="filters" id="ff" role="search" aria-label="Search and filter">
+ <input name="q" placeholder="Search item or keywords" value="${esc(F.q)}" aria-label="Search">
+ <select name="cat" aria-label="Category"><option value="">All categories</option>${Object.keys(CATS).map(c=>`<option ${F.cat===c?"selected":""}>${c}</option>`).join("")}</select>
+ <input name="colour" placeholder="Colour" value="${esc(F.colour)}" aria-label="Colour">
+ <select name="status" aria-label="Status"><option value="">All statuses</option>${["Open","Possible Match","Returned","Closed"].map(c=>`<option ${F.status===c?"selected":""}>${c}</option>`).join("")}</select>
+ <input name="loc" placeholder="Location" value="${esc(F.loc)}" aria-label="Location">
+ <button class="btn">Apply</button></form>
+ <p class="muted">${list.length} report(s) · newest first${toksQ.length?" · ranked by keyword relevance":""}</p>
+ ${list.length?`<div class="grid g2">${list.map(r=>card(r)).join("")}</div>`:empty("No reports match your search. Try fewer filters or different keywords.")}`;
+}
+function myPage(){
+ const l=reports.filter(r=>mine.includes(r.id));
+ return`<h1>My Reports</h1>${l.length?`<div class="grid g2">${l.map(r=>card(r,{max:3,full:true})).join("")}</div>`:empty("You haven’t submitted any reports on this device yet.")}`;
+}
+function adminPage(){
+ if(!admin)return`<div class="card" style="max-width:420px;margin:auto"><h1 style="margin-top:0">🔐 Administrator</h1>
+ <p class="muted">Demo mode PIN: <b>1234</b>. This is only a demonstration. The real version uses Firebase Authentication and Firestore Security Rules.</p>
+ <form id="af"><div id="aerr" role="alert"></div><label for="pin">Admin PIN</label><input id="pin" type="password" autocomplete="off" required><div class="row"><button class="btn">Sign in</button></div></form></div>`;
+ const l=[...reports].sort((a,b)=>b.created-a.created);
+ return`<h1>Admin review</h1><div class="row" style="margin:0 0 12px"><button class="btn ghost" data-act="cleardemo">Remove demo reports</button><button class="btn ghost" data-act="signout">Sign out</button></div>
+ <div class="card tbl"><table><thead><tr><th>ID</th><th>Item</th><th>Reporter (private)</th><th>Status</th><th>Best match</th><th>Requests</th><th>Actions</th></tr></thead><tbody>
+ ${l.map(r=>{const m=matchesFor(r)[0];return`<tr><td>${esc(r.id)}<br><span class="badge t-${r.type}">${r.type}</span></td><td>${esc(r.name)}<br><span class="muted">${esc(r.loc)}</span></td>
+ <td>${esc(r.student)}<br>Class ${esc(r.cls)}, Roll ${esc(r.roll)}<br>${esc(r.phone||"no phone")}</td>
+ <td><span class="badge ${bcls(shown(r))}">${esc(shown(r))}</span></td>
+ <td>${m?`${esc(m.r.id)} (${m.score}%)`:"—"}</td>
+ <td>${r.requests.length?r.requests.map(x=>`<div class="muted">“${esc(x.msg)}” — re ${esc(x.from)}</div>`).join(""):"—"}</td>
+ <td><div class="row" style="margin:0"><button class="btn alt" data-act="returned" data-id="${esc(r.id)}">Returned</button><button class="btn ghost" data-act="close" data-id="${esc(r.id)}">Close</button><button class="btn bad" data-act="del" data-id="${esc(r.id)}">Delete</button></div></td></tr>`}).join("")}</tbody></table></div>`;
+}
+/* ---------- dialog ---------- */
+function ask(html,ok,label="Confirm",cls=""){
+ const d=$("#dlg");d.innerHTML=`<form method="dialog">${html}<div class="row"><button class="btn ghost" value="x">Cancel</button><button class="btn ${cls}" value="ok">${label}</button></div></form>`;
+ d.onclose=()=>{if(d.returnValue==="ok")ok(d)};d.returnValue="";d.showModal();
+}
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+ const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);return}
+ const b=e.target.closest("[data-act]");if(!b)return;
+ const a=b.dataset.act,id=b.dataset.id,r=reports.find(x=>x.id===id);
+ if(a==="request")ask(`<h3>Request contact</h3><p class="muted">Your message goes to the school office, not to the other student. Don’t include phone numbers.</p><label for="rm">Message</label><textarea id="rm" rows="3" maxlength="200" required></textarea>`,d=>{
+  const msg=d.querySelector("#rm").value.trim().slice(0,200);if(!msg)return;r.requests.push({from:b.dataset.from,msg});save();render();
+  ask(`<div class="ok">Request sent. The office will verify both sides before any handover.</div>`,()=>{},"OK")},"Send request");
+ if(a==="returned")ask(`<h3>Safe handover check</h3><p>Before marking <b>${esc(r.name)}</b> as returned, confirm:</p><p><label><input type="checkbox" id="c1" style="width:auto"> Owner described a hidden detail only they would know</label><label><input type="checkbox" id="c2" style="width:auto"> Student ID checked in person</label></p>`,d=>{
+  if(d.querySelector("#c1").checked&&d.querySelector("#c2").checked){r.status="Returned";save();render()}else ask("<p>Both checks are required. Nothing was changed.</p>",()=>{},"OK")},"Mark returned");
+ if(a==="close"){r.status="Closed";save();render()}
+ if(a==="del")ask(`<h3>Delete report?</h3><p>${esc(r.id)} — ${esc(r.name)} will be removed permanently.</p>`,()=>{reports=reports.filter(x=>x.id!==id);mine=mine.filter(x=>x!==id);save();render()},"Delete","bad");
+ if(a==="cleardemo")ask("<p>Remove all demo reports?</p>",()=>{reports=reports.filter(x=>!x.demo);save();render()},"Remove","bad");
+ if(a==="signout"){admin=false;render()}
+});
+document.addEventListener("submit",async e=>{
+ const f=e.target;
+ if(f.id==="hsearch"){e.preventDefault();F={q:$("#hq").value,cat:"",colour:"",status:"",loc:""};go("dash")}
+ if(f.id==="ff"){e.preventDefault();const d=new FormData(f);F={q:d.get("q"),cat:d.get("cat"),colour:d.get("colour"),status:d.get("status"),loc:d.get("loc")};render()}
+ if(f.id==="af"){e.preventDefault();if($("#pin").value==="1234"){admin=true;render()}else $("#aerr").innerHTML='<div class="err">Incorrect PIN. Please try again.</div>'}
+ if(f.id==="rf"){
+  e.preventDefault();const d=new FormData(f),t=f.dataset.type,v=k=>String(d.get(k)||"").trim().slice(0,400);
+  const errs=[];
+  [["name","Item name"],["student","Name"],["cls","Class and section"],["roll","Roll number"],["loc","Location"],["date","Date"]].forEach(([k,l])=>{if(!v(k))errs.push(l+" is required.")});
+  if(v("phone")&&!/^[0-9+\-\s]{7,15}$/.test(v("phone")))errs.push("Phone number should have 7–15 digits.");
+  if(v("date")&&new Date(v("date"))>new Date())errs.push("Date cannot be in the future.");
+  const file=d.get("photo");let photo="";
+  if(file&&file.size){
+   if(!["image/jpeg","image/png","image/webp"].includes(file.type))errs.push("Photo must be JPG, PNG or WebP.");
+   else if(file.size>512000)errs.push("Photo must be under 500 KB.");
+   else photo=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(file)});
+  }
+  if(errs.length){$("#ferr").innerHTML=`<div class="err">${errs.map(esc).join("<br>")}</div>`;return}
+  $("#sub").innerHTML='<span class="spin"></span> Saving…';$("#sub").disabled=true;
+  await new Promise(r=>setTimeout(r,350));
+  let id;do{id="FI-"+(1000+Math.floor(Math.random()*9000))}while(reports.some(x=>x.id===id));
+  reports.push({id,type:t,name:v("name"),student:v("student"),cls:v("cls"),roll:v("roll"),phone:v("phone"),cat:v("cat"),colour:v("colour"),desc:v("desc"),loc:v("loc"),date:v("date"),photo,status:"Open",created:Date.now(),requests:[]});
+  mine.push(id);save();done={type:t,id};render();scrollTo(0,0);
+ }
+});
+render();
+</script>
+</body>
+</html>
